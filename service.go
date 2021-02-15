@@ -27,7 +27,9 @@ func NewService() *Service {
 		panic(fmt.Errorf("newCachedTranslator failed with error: %v", err))
 	}
 
+	deduplicatedTranslator := newDeduplicatedTranslator(cachedTranslator)
+
 	return &Service{
-		translator: cachedTranslator,
+		translator: deduplicatedTranslator,
 	}
 }
