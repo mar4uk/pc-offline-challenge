@@ -13,6 +13,10 @@ type cachedTranslator struct {
 	cache      *lru.Cache
 }
 
+func getKeyForCache(from, to language.Tag, data string) string {
+	return fmt.Sprintf("%s-%s-%s", from, to, data)
+}
+
 func newCachedTranslator(translator Translator, size int) (Translator, error) {
 	cache, err := lru.New(size)
 	if err != nil {
@@ -26,7 +30,7 @@ func newCachedTranslator(translator Translator, size int) (Translator, error) {
 }
 
 func (t *cachedTranslator) Translate(ctx context.Context, from, to language.Tag, data string) (result string, err error) {
-	key := fmt.Sprintf("%s-%s-%s", from, to, data)
+	key := getKeyForCache(from, to, data)
 
 	value, ok := t.cache.Get(key)
 	if ok {
