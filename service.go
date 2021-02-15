@@ -7,6 +7,7 @@ type Service struct {
 	translator Translator
 }
 
+// NewService is a constuctor for translation service
 func NewService() *Service {
 	t := newRandomTranslator(
 		100*time.Millisecond,
@@ -15,6 +16,10 @@ func NewService() *Service {
 	)
 
 	return &Service{
-		translator: t,
+		translator: &backoffTranslator{
+			translator: t,
+			retries:    3,
+			backoff:    time.Millisecond,
+		},
 	}
 }
