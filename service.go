@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Service is a Translator user.
 type Service struct {
@@ -15,11 +18,16 @@ func NewService() *Service {
 		0.1,
 	)
 
+	cachedTranslator, err := newCachedTranslator(&backoffTranslator{
+		translator: t,
+		retries:    3,
+		backoff:    time.Millisecond,
+	}, 100)
+	if err != nil {
+		panic(fmt.Errorf("newCachedTranslator failed with error: %v", err))
+	}
+
 	return &Service{
-		translator: &backoffTranslator{
-			translator: t,
-			retries:    3,
-			backoff:    time.Millisecond,
-		},
+		translator: cachedTranslator,
 	}
 }
